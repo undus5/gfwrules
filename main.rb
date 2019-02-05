@@ -35,5 +35,5 @@ ip_list_str.gsub!("]]", "]\n]")
 
 pac_str = File.read("template.pac")
 pac_str.gsub!("__IPLIST__", ip_list_str)
-File.write("skip-china-ip.pac", pac_str)
+File.write("pac.txt", pac_str)
 
