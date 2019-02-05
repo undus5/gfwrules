@@ -20,7 +20,10 @@ response = HTTP.get(url)
 File.write("china-ip-list.txt", response.to_s) if response.code == 200
 
 puts "Generating PAC file..."
-ip_list_arr = []
+ip_list_arr = [
+  ["127.0.0.0", "255.0.0.0"],
+  ["192.168.0.0", "255.255.0.0"],
+]
 
 File.read("china-ip-list.txt").each_line do |str|
   ip_arr = str.split('/')
