@@ -20,12 +20,10 @@ response = HTTP.get(url)
 File.write("china-ip-list.txt", response.to_s) if response.code == 200
 
 puts "Generating PAC file..."
-ip_list_arr = [
-  ["127.0.0.0", "255.0.0.0"],
-  ["192.168.0.0", "255.255.0.0"],
-]
-
-File.read("china-ip-list.txt").each_line do |str|
+file_content = File.read("LAN-IP-list.txt")
+file_content += File.read("china-ip-list.txt")
+ip_list_arr = []
+file_content.each_line do |str|
   ip_arr = str.split('/')
   ip_arr[1] = calculate_subnet_mask(ip_arr[1].to_i)
   ip_list_arr.push(ip_arr)
