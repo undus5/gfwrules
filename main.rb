@@ -1,4 +1,5 @@
 require 'http'
+require 'yaml'
 
 def calculate_subnet_mask(subnet_prefix_size)
   binary_str_1 = "1" * subnet_prefix_size
@@ -34,7 +35,28 @@ ip_list_str.gsub!("[[", "[\n    [")
 ip_list_str.gsub!("],", "],\n   ")
 ip_list_str.gsub!("]]", "]\n]")
 
-pac_str = File.read("template.pac")
+pac_str = File.read("pac.template")
 pac_str.gsub!("__IPLIST__", ip_list_str)
 File.write("pac.txt", pac_str)
+puts "pac.txt saved."
+
+puts "Generating Surge3 config file..."
+ip_rules = ""
+File.read("china-ip-list.txt").each_line do |str|
+  rule = "IP-CIDR,#{str.strip},DIRECT\n"
+  ip_rules += rule
+end
+ip_rules.rstrip!
+
+config_content = File.read("surge3.template")
+config_content.gsub!("__IPRULES__", ip_rules)
+
+ss_config = YAML.load(File.read("ss.yml"))
+config_content.gsub!("__SERVER__", ss_config["server"])
+config_content.gsub!("__PORT__", ss_config["port"])
+config_content.gsub!("__ENCRYPTION__", ss_config["encryption"])
+config_content.gsub!("__PASSWORD__", ss_config["password"])
+
+File.write("surge3.conf", config_content)
+puts "surge3.conf saved."
 
