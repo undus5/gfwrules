@@ -1,14 +1,25 @@
 require "etc"
-require "yaml"
 require "json"
 require "resolv"
 
 IPSET_NAME = "china-ip-and-lan"
+CHAIN_NAME = "SHADOWSOCKS"
 
 def ipset_exists?
-  result = system("ipset list #{IPSET_NAME}")
-  raise "Please install 'ipset' package first." if result.nil?
+  result = system("ipset list #{IPSET_NAME}", err: File::NULL)
+  if result.nil?
+    puts "Please install 'ipset' package first."
+    exit 127
+  end
   result
+end
+
+def chain_exists?
+  system("iptables -t nat -L #{CHAIN_NAME}", err: File::NULL)
+end
+
+def initiated?
+  ipset_exists? || chain_exists?
 end
 
 def destroy_ipset
@@ -26,29 +37,29 @@ def create_ipset
 end
 
 def setup_rules(ss_config)
-  exit 1 if !system("iptables -t nat -N SHADOWSOCKS")
+  system("iptables -t nat -N #{CHAIN_NAME}")
   ss_server = Resolv.getaddress(ss_config["server"])
-  system("iptables -t nat -A SHADOWSOCKS -d #{ss_server} -j RETURN")
-  system("iptables -t nat -A SHADOWSOCKS -p tcp -m set --match-set #{IPSET_NAME} dst -j RETURN")
-  system("iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-port #{ss_config["local_port"].to_s}")
+  system("iptables -t nat -A #{CHAIN_NAME} -d #{ss_server} -j RETURN")
+  system("iptables -t nat -A #{CHAIN_NAME} -p tcp -m set --match-set #{IPSET_NAME} dst -j RETURN")
+  system("iptables -t nat -A #{CHAIN_NAME} -p tcp -j REDIRECT --to-port #{ss_config["local_port"].to_s}")
 end
 
 def rules_up?
-  system("iptables -t nat -C OUTPUT -p tcp -j SHADOWSOCKS", err: File::NULL)
+  system("iptables -t nat -C OUTPUT -p tcp -j #{CHAIN_NAME}", err: File::NULL)
 end
 
 def rules_up
-  system("iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS") if !rules_up?
+  system("iptables -t nat -A OUTPUT -p tcp -j #{CHAIN_NAME}") if !rules_up?
 end
 
 def rules_down
-  system("iptables -t nat -D OUTPUT -p tcp -j SHADOWSOCKS") if rules_up?
+  system("iptables -t nat -D OUTPUT -p tcp -j #{CHAIN_NAME}") if rules_up?
 end
 
 def purge_rules
   rules_down
-  system("iptables -t nat -F SHADOWSOCKS")
-  system("iptables -t nat -X SHADOWSOCKS")
+  system("iptables -t nat -F #{CHAIN_NAME}")
+  system("iptables -t nat -X #{CHAIN_NAME}")
   destroy_ipset
 end
 
@@ -61,10 +72,8 @@ case ARGV[0]
 when "init"
   if ARGV[1].nil?
     puts "Usage: sudo ruby iptables.rb init 'your-shadowsocks-config-filename'"
-    exit 1
+    exit 99
   end
-
-  puts "It may take a few minutes..."
 
   begin
     ss_config = JSON.parse(File.read(File.expand_path(ARGV[1])))
@@ -73,22 +82,43 @@ when "init"
     puts "Error: Invalid shadowsocks config file."
   end
 
-  destroy_ipset
+  if initiated?
+    puts "Already initiated."
+    exit 99
+  end
+
+  puts "It may take a few minutes..."
   create_ipset
   setup_rules(ss_config)
   rules_up
-
   puts "Done\n"
 when "update"
+  if !initiated?
+    puts "Please run `sudo ruby iptables.rb init` first."
+    exit 99
+  end
   destroy_ipset
   create_ipset
 when "up"
+  if !initiated?
+    puts "Please run `sudo ruby iptables.rb init` first."
+    exit 99
+  end
   rules_up
 when "down"
+  if !initiated?
+    puts "Please run `sudo ruby iptables.rb init` first."
+    exit 99
+  end
   rules_down
 when "purge"
+  if !initiated?
+    puts "Please run `sudo ruby iptables.rb init` first."
+    exit 99
+  end
   purge_rules
 else
+  puts "Usage: sudo ruby iptables.rb [init|up|down|update|purge]"
 end
 
 

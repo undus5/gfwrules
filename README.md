@@ -10,7 +10,14 @@ For Surge 3 on iOS:
 
 [https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/surge3.conf](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/surge3.conf)
 
-Script usage
+## Script usage:
+
+For config files:
 
     bundle
-    ruby main.rb
+    ruby generate_config_files.rb "your-shadowsocks-config.json"
+
+For iptables rules:
+
+    bundle
+    sudo ruby iptables.rb [init|up|down|update|purge]

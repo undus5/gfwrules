@@ -1,5 +1,5 @@
 require 'http'
-require 'yaml'
+require "json"
 
 def calculate_subnet_mask(subnet_prefix_size)
   binary_str_1 = "1" * subnet_prefix_size
@@ -13,6 +13,15 @@ def calculate_subnet_mask(subnet_prefix_size)
     mask_str += "." if i < 3
   end
   mask_str
+end
+
+filename = "surge3-dependencies/shadowsocks-config-example.json" if ARGV[0].nil?
+
+begin
+  ss_config = JSON.parse(File.read(File.expand_path(filename)))
+  raise "" if ss_config["server"].nil?
+rescue JSON::ParserError, RuntimeError
+  puts "Error: Invalid shadowsocks config file."
 end
 
 url = "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt"
@@ -35,7 +44,7 @@ ip_list_str.gsub!("[[", "[\n    [")
 ip_list_str.gsub!("],", "],\n   ")
 ip_list_str.gsub!("]]", "]\n]")
 
-pac_str = File.read("pac.template")
+pac_str = File.read("pac-dependencies/pac.template")
 pac_str.gsub!("__IPLIST__", ip_list_str)
 File.write("pac.txt", pac_str)
 puts "pac.txt saved."
@@ -48,13 +57,12 @@ File.read("china-ip-list.txt").each_line do |str|
 end
 ip_rules.rstrip!
 
-config_content = File.read("surge3.template")
+config_content = File.read("surge3-dependencies/surge3.template")
 config_content.gsub!("__IPRULES__", ip_rules)
 
-ss_config = YAML.load(File.read("ss.yml"))
 config_content.gsub!("__SERVER__", ss_config["server"])
-config_content.gsub!("__PORT__", ss_config["port"])
-config_content.gsub!("__ENCRYPTION__", ss_config["encryption"])
+config_content.gsub!("__PORT__", ss_config["server_port"].to_s)
+config_content.gsub!("__ENCRYPTION__", ss_config["method"])
 config_content.gsub!("__PASSWORD__", ss_config["password"])
 
 File.write("surge3.conf", config_content)

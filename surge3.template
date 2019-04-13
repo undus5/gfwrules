@@ -1,7 +1,0 @@
-[Proxy]
-SS = custom,__SERVER__,__PORT__,__ENCRYPTION__,__PASSWORD__,https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/SSEncrypt.module
-
-[Rule]
-RULE-SET,LAN,DIRECT
-__IPRULES__
-FINAL,SS
