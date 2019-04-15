@@ -6,7 +6,7 @@ IPSET_NAME = "china-ip-and-lan"
 CHAIN_NAME = "SHADOWSOCKS"
 
 def ipset_exists?
-  result = system("ipset list #{IPSET_NAME}", err: File::NULL)
+  result = system("ipset list #{IPSET_NAME}", out: File::NULL, err: File::NULL)
   if result.nil?
     puts "Please install 'ipset' package first."
     exit 127
@@ -15,7 +15,7 @@ def ipset_exists?
 end
 
 def chain_exists?
-  system("iptables -t nat -L #{CHAIN_NAME}", err: File::NULL)
+  system("iptables -t nat -L #{CHAIN_NAME}", out: File::NULL, err: File::NULL)
 end
 
 def initiated?
@@ -29,8 +29,8 @@ end
 def create_ipset
   system("ipset create #{IPSET_NAME} hash:net")
 
-  file_content = File.read("LAN-IP-list.txt")
-  file_content += File.read("china-ip-list.txt")
+  file_content = File.read(File.join(__dir__, "LAN-IP-list.txt"))
+  file_content += File.read(File.join(__dir__, "china-ip-list.txt"))
   file_content.each_line do |str|
     system("ipset add #{IPSET_NAME} #{str.strip}")
   end
