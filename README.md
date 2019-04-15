@@ -21,3 +21,23 @@ For iptables rules:
 
     bundle
     sudo ruby iptables.rb [init|up|down|update|purge]
+
+## Config ipset & iptables auto restore and ss-redir auto start on system boot
+
+For Ubuntu 18.04, Edit `/etc/rc.local` with following content, if the file is not exists, create it:
+
+    #!/bin/sh
+
+    if [ -f /etc/ipset.conf ]; then
+        ipset restore -file /etc/ipset.conf
+    fi
+
+    if [ -f /etc/iptables.rules ]; then
+        iptables-restore < /etc/iptables.rules
+    fi
+
+    ss-redir -c /etc/shadowsocks-libev/config.json -f /var/run/shadowsocks.pid
+
+    exit 0
+
+Then run `sudo chmod +x /etc/rc.local`

@@ -22,8 +22,13 @@ def initiated?
   ipset_exists? || chain_exists?
 end
 
+def save_ipset
+  system("sh -c 'ipset save > /etc/ipset.conf'")
+end
+
 def destroy_ipset
   system("ipset destroy #{IPSET_NAME}", err: File::NULL)
+  save_ipset
 end
 
 def create_ipset
@@ -34,6 +39,7 @@ def create_ipset
   file_content.each_line do |str|
     system("ipset add #{IPSET_NAME} #{str.strip}")
   end
+  save_ipset
 end
 
 def setup_rules(ss_config)
@@ -44,22 +50,29 @@ def setup_rules(ss_config)
   system("iptables -t nat -A #{CHAIN_NAME} -p tcp -j REDIRECT --to-port #{ss_config["local_port"].to_s}")
 end
 
+def save_rules
+  system("sh -c 'iptables-save > /etc/iptables.rules'")
+end
+
 def rules_up?
   system("iptables -t nat -C OUTPUT -p tcp -j #{CHAIN_NAME}", err: File::NULL)
 end
 
 def rules_up
   system("iptables -t nat -A OUTPUT -p tcp -j #{CHAIN_NAME}") if !rules_up?
+  save_rules
 end
 
 def rules_down
   system("iptables -t nat -D OUTPUT -p tcp -j #{CHAIN_NAME}") if rules_up?
+  save_rules
 end
 
 def purge_rules
   rules_down
   system("iptables -t nat -F #{CHAIN_NAME}")
   system("iptables -t nat -X #{CHAIN_NAME}")
+  save_rules
   destroy_ipset
 end
 
