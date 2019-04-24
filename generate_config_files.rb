@@ -30,8 +30,8 @@ response = HTTP.get(url)
 File.write("china-ip-list.txt", response.to_s) if response.code == 200
 
 puts "Generating PAC file..."
-file_content = File.read("LAN-IP-list.txt")
-file_content += File.read("china-ip-list.txt")
+file_content = File.read(File.join(__dir__, "LAN-IP-list.txt"))
+file_content += File.read(File.join(__dir__, "china-ip-list.txt"))
 ip_list_arr = []
 file_content.each_line do |str|
   ip_arr = str.split('/')
@@ -44,20 +44,20 @@ ip_list_str.gsub!("[[", "[\n    [")
 ip_list_str.gsub!("],", "],\n   ")
 ip_list_str.gsub!("]]", "]\n]")
 
-pac_str = File.read("pac-dependencies/pac.template")
+pac_str = File.read(File.join(__dir__, "pac-dependencies/pac.template"))
 pac_str.gsub!("__IPLIST__", ip_list_str)
 File.write("pac.txt", pac_str)
 puts "pac.txt saved."
 
 puts "Generating Surge3 config file..."
 ip_rules = ""
-File.read("china-ip-list.txt").each_line do |str|
+File.read(File.join(__dir__, "china-ip-list.txt")).each_line do |str|
   rule = "IP-CIDR,#{str.strip},DIRECT\n"
   ip_rules += rule
 end
 ip_rules.rstrip!
 
-config_content = File.read("surge3-dependencies/surge3.template")
+config_content = File.read(File.join(__dir__, "surge3-dependencies/surge3.template"))
 config_content.gsub!("__IPRULES__", ip_rules)
 
 config_content.gsub!("__SERVER__", ss_config["server"])
@@ -65,6 +65,6 @@ config_content.gsub!("__PORT__", ss_config["server_port"].to_s)
 config_content.gsub!("__ENCRYPTION__", ss_config["method"])
 config_content.gsub!("__PASSWORD__", ss_config["password"])
 
-File.write("surge3.conf", config_content)
+File.write(File.join(__dir__, "surge3.conf"), config_content)
 puts "surge3.conf saved."
 
