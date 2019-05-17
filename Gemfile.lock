@@ -5,7 +5,7 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
-    http (4.0.3)
+    http (4.1.1)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.0)
@@ -17,7 +17,7 @@ GEM
     public_suffix (3.0.3)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.5)
+    unf_ext (0.0.7.6)
 
 PLATFORMS
   ruby
