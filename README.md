@@ -20,7 +20,7 @@ For config files:
 For iptables rules:
 
     bundle
-    sudo ruby iptables.rb [init|up|down|update|purge]
+    sudo ruby iptables.rb [init|up|down|refresh|purge]
 
 ## Config ipset & iptables auto restore and ss-redir auto start on system boot
 

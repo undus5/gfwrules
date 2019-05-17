@@ -18,7 +18,7 @@ end
 filename = "surge3-dependencies/shadowsocks-config-example.json" if ARGV[0].nil?
 
 begin
-  ss_config = JSON.parse(File.read(File.expand_path(filename)))
+  ss_config = JSON.parse(File.read(File.join(__dir__, filename)))
   raise "" if ss_config["server"].nil?
 rescue JSON::ParserError, RuntimeError
   puts "Error: Invalid shadowsocks config file."

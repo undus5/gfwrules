@@ -4,6 +4,29 @@ require "resolv"
 
 IPSET_NAME = "china-ip-and-lan"
 CHAIN_NAME = "SHADOWSOCKS"
+LOCK_FILE = File.join(__dir__, "lock.json")
+
+def init(ss_config_file)
+  begin
+    ss_config = JSON.parse(File.read(ss_config_file))
+    raise "" if ss_config["server"].nil?
+  rescue JSON::ParserError, RuntimeError
+    puts "Error: Invalid shadowsocks config file."
+  end
+
+  puts "It may take a few minutes..."
+
+  create_ipset
+  setup_rules(ss_config)
+  rules_up
+
+  if !File.exist?(LOCK_FILE)
+    lock_info = {
+      ss_config_file: ss_config_file
+    }
+    File.write(LOCK_FILE, lock_info.to_json)
+  end
+end
 
 def ipset_exists?
   result = system("ipset list #{IPSET_NAME}", out: File::NULL, err: File::NULL)
@@ -22,13 +45,7 @@ def initiated?
   ipset_exists? || chain_exists?
 end
 
-def save_ipset
-  system("sh -c 'ipset save > /etc/ipset.conf'")
-end
-
 def destroy_ipset
-  system("ipset destroy #{IPSET_NAME}", err: File::NULL)
-  save_ipset
 end
 
 def create_ipset
@@ -39,7 +56,7 @@ def create_ipset
   file_content.each_line do |str|
     system("ipset add #{IPSET_NAME} #{str.strip}")
   end
-  save_ipset
+  system("sh -c 'ipset save > /etc/ipset.conf'")
 end
 
 def setup_rules(ss_config)
@@ -68,12 +85,15 @@ def rules_down
   save_rules
 end
 
-def purge_rules
+def purge
+  # purge_rules
   rules_down
   system("iptables -t nat -F #{CHAIN_NAME}")
   system("iptables -t nat -X #{CHAIN_NAME}")
-  save_rules
-  destroy_ipset
+  system("rm -rf /etc/iptables.rules")
+  # destroy_ipset
+  system("ipset destroy #{IPSET_NAME}", err: File::NULL)
+  system("rm -rf /etc/ipset.conf")
 end
 
 if Etc.getpwuid.uid != 0
@@ -83,35 +103,26 @@ end
 
 case ARGV[0]
 when "init"
-  if ARGV[1].nil?
-    puts "Usage: sudo ruby iptables.rb init 'your-shadowsocks-config-filename'"
-    exit 99
-  end
-
-  begin
-    ss_config = JSON.parse(File.read(File.expand_path(ARGV[1])))
-    raise "" if ss_config["server"].nil?
-  rescue JSON::ParserError, RuntimeError
-    puts "Error: Invalid shadowsocks config file."
-  end
-
   if initiated?
     puts "Already initiated."
     exit 99
   end
-
-  puts "It may take a few minutes..."
-  create_ipset
-  setup_rules(ss_config)
-  rules_up
+  if ARGV[1].nil?
+    puts "Usage: sudo ruby iptables.rb init 'your-shadowsocks-config-filename'"
+    exit 99
+  end
+  init(File.expand_path(ARGV[1]))
   puts "Done\n"
-when "update"
+when "refresh"
   if !initiated?
     puts "Please run `sudo ruby iptables.rb init` first."
     exit 99
   end
-  destroy_ipset
-  create_ipset
+  if File.exist?(LOCK_FILE)
+    lock_info = JSON.parse(File.read(LOCK_FILE))
+    purge
+    init(lock_info["ss_config_file"])
+  end
 when "up"
   if !initiated?
     puts "Please run `sudo ruby iptables.rb init` first."
@@ -129,9 +140,8 @@ when "purge"
     puts "Please run `sudo ruby iptables.rb init` first."
     exit 99
   end
-  purge_rules
+  purge
+  system("rm -rf #{LOCK_FILE}")
 else
   puts "Usage: sudo ruby iptables.rb [init|up|down|update|purge]"
 end
-
-
