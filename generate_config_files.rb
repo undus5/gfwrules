@@ -17,6 +17,9 @@ SURGE3_CONFIG_RELEASE_PATH = File.join(__dir__, "releases/surge3.conf")
 
 CLASH_CONFIG_RELEASE_PATH = File.join(__dir__, "releases/clash.yml")
 
+SURGE3_CONFIG_TEMP_PATH = File.join(__dir__, "surge3.conf")
+CLASH_CONFIG_TEMP_PATH = File.join(__dir__, "clash.yml")
+
 def calculate_subnet_mask(subnet_prefix_size)
   binary_str_1 = "1" * subnet_prefix_size
   binary_str_0 = "0" * (32 - subnet_prefix_size)
@@ -86,8 +89,13 @@ config_content.gsub!("__PORT__", ss_config["server_port"].to_s)
 config_content.gsub!("__ENCRYPTION__", ss_config["method"])
 config_content.gsub!("__PASSWORD__", ss_config["password"])
 
-File.write(SURGE3_CONFIG_RELEASE_PATH, config_content)
-puts "#{SURGE3_CONFIG_RELEASE_PATH} saved."
+if ARGV[0].nil?
+  File.write(SURGE3_CONFIG_RELEASE_PATH, config_content)
+  puts "#{SURGE3_CONFIG_RELEASE_PATH} saved."
+else
+  File.write(SURGE3_CONFIG_TEMP_PATH, config_content)
+  puts "#{SURGE3_CONFIG_TEMP_PATH} saved."
+end
 
 # ---
 puts "Generating clash config file..."
@@ -127,5 +135,10 @@ clash_config = {
   "Rule" => ip_rules
 }
 
-File.write(CLASH_CONFIG_RELEASE_PATH, clash_config.to_yaml.gsub("---\n", ""))
-puts "#{CLASH_CONFIG_RELEASE_PATH} saved."
+if ARGV[0].nil?
+  File.write(CLASH_CONFIG_RELEASE_PATH, clash_config.to_yaml.gsub("---\n", ""))
+  puts "#{CLASH_CONFIG_RELEASE_PATH} saved."
+else
+  File.write(CLASH_CONFIG_TEMP_PATH, clash_config.to_yaml.gsub("---\n", ""))
+  puts "#{CLASH_CONFIG_TEMP_PATH} saved."
+end
