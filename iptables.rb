@@ -5,6 +5,8 @@ require "resolv"
 IPSET_NAME = "china-ip-and-lan"
 CHAIN_NAME = "SHADOWSOCKS"
 LOCK_FILE = File.join(__dir__, "lock.json")
+LAN_IP_LIST_PATH = File.join(__dir__, "ip-lists/lan-ip-list.txt")
+CHINA_IP_LIST_PATH = File.join(__dir__, "ip-lists/china-ip-list.txt")
 
 def init(ss_config_file)
   begin
@@ -51,8 +53,8 @@ end
 def create_ipset
   system("ipset create #{IPSET_NAME} hash:net")
 
-  file_content = File.read(File.join(__dir__, "LAN-IP-list.txt"))
-  file_content += File.read(File.join(__dir__, "china-ip-list.txt"))
+  file_content = File.read(LAN_IP_LIST_PATH)
+  file_content += File.read(CHINA_IP_LIST_PATH)
   file_content.each_line do |str|
     system("ipset add #{IPSET_NAME} #{str.strip}")
   end

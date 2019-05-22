@@ -2,13 +2,23 @@
 
 Turn China IP list([17mon@github/china_ip_list](https://github.com/17mon/china_ip_list)) into Shadowsocks clients rules, make all china IP and LAN IP request go directly.
 
-For shadowsocks-windows PAC file:
+## Releases
 
-[https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/pac.txt](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/pac.txt)
+PAC for shadowsocks-windows:
 
-For Surge 3 on iOS:
+[pac4shadowsocks_windows.js](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/pac4shadowsocks_windows.js)
 
-[https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/surge3.conf](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/surge3.conf)
+PAC for SwitchyOmega:
+
+[pac4switchyomega.js](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/pac4switchyomega.js)
+
+Surge 3 on iOS:
+
+[surge3.conf](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/surge3.conf)
+
+Clash for Windows:
+
+[clash.yml](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/clash.yml)
 
 ## Script usage:
 
