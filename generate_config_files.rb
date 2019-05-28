@@ -75,7 +75,7 @@ puts "#{PAC4SWITCHYOMEGA_RELEASE_PATH} saved."
 # ---
 puts "Generating Surge3 config file..."
 ip_rules = ""
-china_ip_list_raw.each_line do |str|
+(lan_ip_list_raw + china_ip_list_raw).each_line do |str|
   rule = "IP-CIDR,#{str.strip},DIRECT\n"
   ip_rules += rule
 end

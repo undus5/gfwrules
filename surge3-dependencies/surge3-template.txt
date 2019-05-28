@@ -2,6 +2,5 @@
 SS = custom,__SERVER__,__PORT__,__ENCRYPTION__,__PASSWORD__,https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/surge3-dependencies/SSEncrypt.module
 
 [Rule]
-RULE-SET,LAN,DIRECT
 __IPRULES__
 FINAL,SS
