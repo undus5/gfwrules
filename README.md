@@ -22,6 +22,12 @@ Clash for Windows:
 
 ## Script usage:
 
+Prerequisite:
+
+    # Based on Ubuntu 18.04 LTS
+    sudo apt install ipset
+    sudo apt install shadowsocks-libev
+
 For config files:
 
     bundle
@@ -30,7 +36,7 @@ For config files:
 For iptables rules:
 
     bundle
-    sudo ruby iptables.rb [init|up|down|refresh|purge]
+    sudo $(which ruby) iptables.rb [init|up|down|refresh|purge]
 
 ## Config ipset & iptables auto restore and ss-redir auto start on system boot
 
@@ -49,5 +55,10 @@ For Ubuntu 18.04, Edit `/etc/rc.local` with following content, if the file is no
     ss-redir -c /etc/shadowsocks-libev/config.json -f /var/run/shadowsocks.pid
 
     exit 0
+
+Or use the one in this repo.
+
+    sudo cp rc.local /etc/rc.local
+    sudo chown root:root /etc/rc.local
 
 Then run `sudo chmod +x /etc/rc.local`
