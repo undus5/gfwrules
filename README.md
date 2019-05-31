@@ -12,7 +12,7 @@ PAC for SwitchyOmega:
 
 [pac4switchyomega.js](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/pac4switchyomega.js)
 
-Surge 3 on iOS:
+Surge / ShadowRocket / Surfboard:
 
 [surge3.conf](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/surge3.conf)
 
