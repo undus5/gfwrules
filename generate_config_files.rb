@@ -19,6 +19,7 @@ CLASH_CONFIG_RELEASE_PATH = File.join(__dir__, "releases/clash.yml")
 
 SURGE3_CONFIG_TEMP_PATH = File.join(__dir__, "surge3.conf")
 CLASH_CONFIG_TEMP_PATH = File.join(__dir__, "clash.yml")
+PAC4SWITCHYOMEGA_TEMP_PATH = File.join(__dir__, "pac4switchyomega.js")
 
 def calculate_subnet_mask(subnet_prefix_size)
   binary_str_1 = "1" * subnet_prefix_size
@@ -69,8 +70,26 @@ File.write(PAC4SHADOWSOCKS_WINDOWS_RELEASE_PATH, pac4shadowsocks_windows_str.gsu
 puts "#{PAC4SHADOWSOCKS_WINDOWS_RELEASE_PATH} saved."
 
 pac4switchyomega_str = File.read(PAC4SWITCHYOMEGA_TEMPLATE_PATH)
-File.write(PAC4SWITCHYOMEGA_RELEASE_PATH, pac4switchyomega_str.gsub("__IPLIST__", ip_list_str))
-puts "#{PAC4SWITCHYOMEGA_RELEASE_PATH} saved."
+pac4switchyomega_str = pac4switchyomega_str.gsub("__IPLIST__", ip_list_str)
+if ss_config["local_address"] && !ss_config["local_address"].empty?
+  local_address = ss_config["local_address"]
+else
+  local_address = "127.0.0.1"
+end
+if ss_config["local_port"]
+  local_port = ss_config["local_port"]
+else
+  local_port = 1080
+end
+pac4switchyomega_str = pac4switchyomega_str.gsub("__LOCAL_ADDRESS__", local_address)
+pac4switchyomega_str = pac4switchyomega_str.gsub("__LOCAL_PORT__", local_port.to_s)
+if ARGV[0].nil?
+  File.write(PAC4SWITCHYOMEGA_RELEASE_PATH, pac4switchyomega_str)
+  puts "#{PAC4SWITCHYOMEGA_RELEASE_PATH} saved."
+else
+  File.write(PAC4SWITCHYOMEGA_TEMP_PATH, pac4switchyomega_str)
+  puts "#{PAC4SWITCHYOMEGA_TEMP_PATH} saved."
+end
 
 # ---
 puts "Generating Surge3 config file..."
