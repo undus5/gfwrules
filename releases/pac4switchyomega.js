@@ -5699,8 +5699,8 @@ function FindProxyForURL(url, host) {
         if (isInNet(host, chinaIP[i][0], chinaIP[i][1])) {
             return 'DIRECT';
         }
-        return 'SOCKS 127.0.0.1:1080';
     }
+    return 'SOCKS5 127.0.0.1:1080';
 }
 
 /* End of PAC */;

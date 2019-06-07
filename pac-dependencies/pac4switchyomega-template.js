@@ -19,8 +19,8 @@ function FindProxyForURL(url, host) {
         if (isInNet(host, chinaIP[i][0], chinaIP[i][1])) {
             return 'DIRECT';
         }
-        return 'SOCKS5 __LOCAL_ADDRESS__:__LOCAL_PORT__';
     }
+    return 'SOCKS5 __LOCAL_ADDRESS__:__LOCAL_PORT__';
 }
 
 /* End of PAC */;
