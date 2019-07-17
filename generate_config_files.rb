@@ -2,8 +2,8 @@ require 'http'
 require "json"
 require "yaml"
 
-LAN_IP_LIST_PATH = File.join(__dir__, "ip-lists/lan-ip-list.txt")
-CHINA_IP_LIST_PATH = File.join(__dir__, "ip-lists/china-ip-list.txt")
+LAN_IP_LIST_PATH = File.join(__dir__, "lan_ip_list.txt")
+CHINA_IP_LIST_PATH = File.join(__dir__, "china_ip_list.txt")
 
 PAC4SHADOWSOCKS_WINDOWS_TEMPLATE_PATH = File.join(__dir__, "pac-dependencies/pac4shadowsocks_windows-template.js")
 PAC4SHADOWSOCKS_WINDOWS_RELEASE_PATH = File.join(__dir__, "releases/pac4shadowsocks_windows.js")
@@ -43,10 +43,10 @@ rescue JSON::ParserError, RuntimeError
   puts "Error: Invalid shadowsocks config file."
 end
 
-url = "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt"
-puts "Downloading #{url}"
-response = HTTP.get(url)
-File.write(CHINA_IP_LIST_PATH, response.to_s) if response.code == 200
+# url = "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt"
+# puts "Downloading #{url}"
+# response = HTTP.get(url)
+# File.write(CHINA_IP_LIST_PATH, response.to_s) if response.code == 200
 
 lan_ip_list_raw  = File.read(LAN_IP_LIST_PATH)
 china_ip_list_raw = File.read(CHINA_IP_LIST_PATH)
