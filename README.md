@@ -35,30 +35,18 @@ For config files:
 
 For iptables rules:
 
-    bundle
-    sudo $(which ruby) iptables.rb [init|up|down|refresh|purge]
+    sudo bash rules_up.sh
 
 ## Config ipset & iptables auto restore and ss-redir auto start on system boot
 
-For Ubuntu 18.04, Edit `/etc/rc.local` with following content, if the file is not exists, create it:
+For Ubuntu 18.04, Edit `/etc/rc.local` with following content:
 
     #!/bin/sh
 
-    if [ -f /etc/ipset.conf ]; then
-        ipset restore -file /etc/ipset.conf
-    fi
-
-    if [ -f /etc/iptables.rules ]; then
-        iptables-restore < /etc/iptables.rules
-    fi
-
-    ss-redir -c /etc/shadowsocks-libev/config.json -f /var/run/shadowsocks.pid
+    ss-redir -c ss.json -f /var/run/ss-redir.pid
 
     exit 0
 
-Or use the one in this repo.
-
-    sudo cp rc.local /etc/rc.local
-    sudo chown root:root /etc/rc.local
+If the file is not exists, create it manually.
 
 Then run `sudo chmod +x /etc/rc.local`
