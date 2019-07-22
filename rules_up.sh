@@ -22,6 +22,7 @@ if [ $? = 0 ]; then
 fi
 ipset destroy $IPSET_NAME > /dev/null 2>&1
 if [ $? = 127 ]; then
+    echo "ipset command not found.";
     exit 1
 fi
 
