@@ -4,12 +4,17 @@ if [ $EUID != 0 ]; then
     echo "Requiring root privilege.";
     exit 1
 fi
-if [ ! $1 ] || [ ! -f $1 ]; then
+if [ ! $1 ] || [ ! $2 ]; then
+    echo "Usage: ./rules.sh [up|down] [ss-config-file]";
+    exit 1
+fi
+if [ ! -f $2 ]; then
     echo "Missing SS config file.";
     exit 1
 fi
 
-DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" > /dev/null 2>&1 && pwd -P )"
+WORKING_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" > /dev/null 2>&1 && pwd -P )"
+cd $WORKING_DIR;
 
 CHAIN_NAME="SHADOWSOCKS"
 IPSET_NAME="CHINAIP"
