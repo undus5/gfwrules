@@ -1,29 +1,22 @@
 #!/bin/bash
 
+WORKING_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" > /dev/null 2>&1 && pwd -P )"
+cd $WORKING_DIR;
+
 if [ $EUID != 0 ]; then
     echo "Requiring root privilege.";
     exit 1
 fi
-if [ ! $1 ] || [ ! $2 ]; then
-    echo "Usage: ./rules.sh [enable|disable] [ss-config-file]";
+
+print_usage_info () {
+    printf "Usage:\t./rules.sh enable [ss-config-file]\n"
+    printf "\t./rules.sh disable\n"
+}
+
+if [ ! $1 ]; then
+    print_usage_info;
     exit 1
 fi
-if [ ! -f $2 ]; then
-    echo "Missing SS config file.";
-    exit 1
-fi
-
-WORKING_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" > /dev/null 2>&1 && pwd -P )"
-cd $WORKING_DIR;
-
-python3 resolve_ss_config.py $2 server > /dev/null 2>&1;
-if [ $? != 0 ]; then
-    echo "Invalid SS config file.";
-    exit 1
-fi
-
-SERVER=$(python3 resolve_ss_config.py $2 server)
-LOCAL_PORT=$(python3 resolve_ss_config.py $2 local_port)
 
 CHAIN_NAME="SHADOWSOCKS"
 IPSET_NAME="CHINAIP"
@@ -44,9 +37,25 @@ rules_purge () {
 
 case $1 in
     enable)
+        if [ ! $2 ]; then
+            print_usage_info;
+            exit 1
+        fi
+        if [ ! -f $2 ]; then
+            echo "Invalid SS config file.";
+            exit 1
+        fi
+        python3 resolve_ss_config.py $2 server > /dev/null 2>&1;
+        if [ $? != 0 ]; then
+            echo "Invalid SS config file.";
+            exit 1
+        fi
+
         rules_purge;
 
         # Setup rules
+        SERVER=$(python3 resolve_ss_config.py $2 server)
+        LOCAL_PORT=$(python3 resolve_ss_config.py $2 local_port)
         ipset create $IPSET_NAME hash:net;
 
         cat lan_ip_list.txt china_ip_list.txt | \
@@ -67,6 +76,6 @@ case $1 in
         rules_purge;
         ;;
     *)
-        echo "Usage: ./rules.sh [enable|disable] [ss-config-file]";
+        print_usage_info;
         ;;
 esac

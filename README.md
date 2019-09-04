@@ -33,11 +33,12 @@ For config files:
     bundle
     ruby generate_config_files.rb "your-shadowsocks-config.json"
 
-For iptables rules:
+Enable/Disable bypass rules:
 
-    sudo bash rules_up.sh
+    sudo bash rules.sh enable [your-shadowsocks-config.json]
+    sudo bash rules.sh disable
 
-## Config ipset & iptables auto restore and ss-redir auto start on system boot
+## ss-redir autostart on system boot
 
 For Ubuntu 18.04, Edit `/etc/rc.local` with following content:
 
@@ -50,3 +51,20 @@ For Ubuntu 18.04, Edit `/etc/rc.local` with following content:
 If the file is not exists, create it manually.
 
 Then run `sudo chmod +x /etc/rc.local`
+
+## DNS over TCP
+
+    sudo apt install unbound
+
+then edit `/etc/unbound/unbound.conf` with:
+
+    tcp-upstream: yes
+    forward-zone:
+        name: "."
+        forward-addr: 8.8.8.8
+        forward-addr: 8.8.4.4
+        forward-first: no
+
+restart service
+
+    sudo systemctl restart unbound
