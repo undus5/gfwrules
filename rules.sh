@@ -5,7 +5,7 @@ if [ $EUID != 0 ]; then
     exit 1
 fi
 if [ ! $1 ] || [ ! $2 ]; then
-    echo "Usage: ./rules.sh [up|down] [ss-config-file]";
+    echo "Usage: ./rules.sh [enable|disable] [ss-config-file]";
     exit 1
 fi
 if [ ! -f $2 ]; then
@@ -43,7 +43,7 @@ rules_purge () {
 }
 
 case $1 in
-    bypass_enable)
+    enable)
         rules_purge;
 
         # Setup rules
@@ -63,21 +63,10 @@ case $1 in
 
         iptables -t nat -A OUTPUT -p tcp -j $CHAIN_NAME;
         ;;
-    bypass_disable)
-        rules_purge;
-        ;;
-    global_enable)
-        rules_purge;
-        iptables -t nat -N $CHAIN_NAME;
-        iptables -t nat -A $CHAIN_NAME -d $SERVER -j RETURN;
-        iptables -t nat -A $CHAIN_NAME -p tcp -j REDIRECT --to-port $LOCAL_PORT;
-
-        iptables -t nat -A OUTPUT -p tcp -j $CHAIN_NAME;
-        ;;
-    global_disable)
+    disable)
         rules_purge;
         ;;
     *)
-        echo "Usage: ./iptables.sh [up|down] [ss-config-file]";
+        echo "Usage: ./rules.sh [enable|disable] [ss-config-file]";
         ;;
 esac
