@@ -9,8 +9,8 @@ if [ $EUID != 0 ]; then
 fi
 
 print_usage_info () {
-    printf "Usage:\t./rules.sh enable [ss-config-file]\n"
-    printf "\t./rules.sh disable\n"
+    printf "Usage:\t$0 enable [ss-config-file]\n"
+    printf "\t$0 disable\n"
 }
 
 if [ ! $1 ]; then
@@ -53,12 +53,14 @@ case $1 in
 
         rules_purge;
 
-        # Setup rules
-        SERVER=$(python3 resolve_ss_config.py $2 server)
-        LOCAL_PORT=$(python3 resolve_ss_config.py $2 local_port)
+        SCRIPT="utils/scripts/resolve_ss_config.py"
+        SERVER=$(python3 $SCRIPT $2 server)
+        LOCAL_PORT=$(python3 $SCRIPT $2 local_port)
+        IP_LIST_PATH="utils/ip_lists"
+
         ipset create $IPSET_NAME hash:net;
 
-        cat lan_ip_list.txt china_ip_list.txt | \
+        cat $IP_LIST_PATH/lan_ip_list.txt $IP_LIST_PATH/china_ip_list.txt | \
         while IFS= read line || [ -n "$line" ]; do
             if [ ! -z $line ]; then
                 ipset add $IPSET_NAME $line;
