@@ -22,7 +22,7 @@ function FindProxyForURL(url, host) {
             return 'DIRECT';
         }
     }
-    return 'SOCKS5 __LOCAL_ADDRESS__:__LOCAL_PORT__';
+    return 'SOCKS5 127.0.0.1:1080';
 }
 
 /* End of PAC */;
