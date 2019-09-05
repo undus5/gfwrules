@@ -52,7 +52,7 @@ def generate_file(name):
 
   filepath = f'releases/{name}.js'
   f = open(filepath, 'w')
-  f.write(template.replace("__IPLIST__", ip_list_content))
+  f.write(template.replace("__IP_LIST__", ip_list_content))
   f.close()
 
   print(f'\'{filepath}\' saved.')

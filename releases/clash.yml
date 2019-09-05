@@ -1,15 +1,23 @@
+port: 7890
+socks-port: 7891
+redir-port: 0
+allow-lan: false
+mode: Rule
+log-level: info
+external-controller: 0.0.0.0:9090
+secret: ''
 Proxy:
-- cipher: __ENCRYPTION__
-  name: SS
-  password: __PASSWORD__
-  port: __SERVER_PORT__
+- type: ss
   server: __SERVER__
-  type: ss
+  port: __SERVER_PORT__
+  password: __PASSWORD__
+  cipher: __ENCRYPTION__
+  name: SS
 Proxy Group:
 - name: Proxy
+  type: select
   proxies:
   - SS
-  type: select
 Rule:
 - IP-CIDR,127.0.0.0/8,DIRECT
 - IP-CIDR,192.168.0.0/16,DIRECT
@@ -5712,11 +5720,3 @@ Rule:
 - IP-CIDR,223.255.236.0/22,DIRECT
 - IP-CIDR,223.255.252.0/23,DIRECT
 - MATCH,SS
-allow-lan: false
-external-controller: 0.0.0.0:9090
-log-level: info
-mode: Rule
-port: 7890
-redir-port: 0
-secret: ''
-socks-port: 7891

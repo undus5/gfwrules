@@ -14,7 +14,7 @@ var FindProxyForURL = function(init, profiles) {
     "+p": function() {
         ;
 
-var ipList = __IPLIST__;
+var ipList = __IP_LIST__;
 
 function FindProxyForURL(url, host) {
     for (var i = 0; i < ipList.length; i++) {
