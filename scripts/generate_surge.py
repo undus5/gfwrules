@@ -3,7 +3,7 @@
 import os
 
 script_path = os.path.dirname(os.path.realpath(__file__))
-os.chdir(script_path)
+os.chdir(os.path.join(script_path, '..'))
 
 def format_ip_rules(ip_list_name):
   f = open(f'utils/ip_lists/{ip_list_name}.txt')

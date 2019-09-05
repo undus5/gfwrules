@@ -3,7 +3,7 @@
 import os
 
 script_path = os.path.dirname(os.path.realpath(__file__))
-os.chdir(script_path)
+os.chdir(os.path.join(script_path, '..'))
 
 def subnet_mask(prefix_size):
   binary_str_1 = "1" * prefix_size

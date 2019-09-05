@@ -53,7 +53,7 @@ case $1 in
 
         rules_purge;
 
-        SCRIPT="utils/scripts/resolve_ss_config.py"
+        SCRIPT="scripts/resolve_ss_config.py"
         SERVER=$(python3 $SCRIPT $2 server)
         LOCAL_PORT=$(python3 $SCRIPT $2 local_port)
         IP_LIST_PATH="utils/ip_lists"

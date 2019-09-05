@@ -6,7 +6,7 @@ Turn China IP list([17mon@github/china_ip_list](https://github.com/17mon/china_i
 
 PAC for shadowsocks-windows:
 
-[pac4shadowsocks_windows.js](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/pac4shadowsocks_windows.js)
+[pac4sswin.js](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/pac4sswin.js)
 
 PAC for SwitchyOmega:
 
@@ -14,7 +14,7 @@ PAC for SwitchyOmega:
 
 Surge / ShadowRocket / Surfboard:
 
-[surge3.conf](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/surge3.conf)
+[surge.conf](https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/releases/surge.conf)
 
 Clash for Windows:
 
@@ -22,41 +22,26 @@ Clash for Windows:
 
 ## Script usage:
 
+Generage config files:
+
+    ./update_releases.sh
+
+## Setup rules on Linux
+
 Prerequisite:
 
-    # Based on Ubuntu 18.04 LTS
-    sudo apt install ipset
-    sudo apt install shadowsocks-libev
-
-For config files:
-
-    bundle
-    ruby generate_config_files.rb "your-shadowsocks-config.json"
+Make sure your system has `ipset` and `shadowsocks-libev` installed.
 
 Enable/Disable bypass rules:
 
-    sudo bash rules.sh enable [your-shadowsocks-config.json]
-    sudo bash rules.sh disable
+    sudo ./iptables_rules.sh enable [your-ss-config.json]
+    sudo ./iptables_rules.sh disable
 
-## ss-redir autostart on system boot
+DNS over TCP:
 
-For Ubuntu 18.04, Edit `/etc/rc.local` with following content:
+1. Install `unbound` package.
 
-    #!/bin/sh
-
-    ss-redir -c ss.json -f /var/run/ss-redir.pid
-
-    exit 0
-
-If the file is not exists, create it manually.
-
-Then run `sudo chmod +x /etc/rc.local`
-
-## DNS over TCP
-
-    sudo apt install unbound
-
-then edit `/etc/unbound/unbound.conf` with:
+2. Edit `/etc/unbound/unbound.conf` with:
 
     tcp-upstream: yes
     forward-zone:
@@ -65,6 +50,4 @@ then edit `/etc/unbound/unbound.conf` with:
         forward-addr: 8.8.4.4
         forward-first: no
 
-restart service
-
-    sudo systemctl restart unbound
+3. Restart unbound service
