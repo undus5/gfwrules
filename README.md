@@ -39,9 +39,9 @@ Enable/Disable bypass rules:
 
 DNS over TCP:
 
-1. Install `unbound` package.
+First, install `unbound` package.
 
-2. Edit `/etc/unbound/unbound.conf` with:
+Second, edit `/etc/unbound/unbound.conf` with:
 
     tcp-upstream: yes
     forward-zone:
@@ -50,4 +50,4 @@ DNS over TCP:
         forward-addr: 8.8.4.4
         forward-first: no
 
-3. Restart unbound service
+Third, restart `unbound` service
