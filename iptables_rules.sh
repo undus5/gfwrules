@@ -35,28 +35,22 @@ rules_purge () {
     fi
 }
 
+resolve_json () {
+    python3 -c "import json;print(json.loads(open('$1').read())['$2'])"
+}
+
 case $1 in
     enable)
         if [ ! $2 ]; then
             print_usage_info;
             exit 1
         fi
-        if [ ! -f $2 ]; then
-            echo "Invalid SS config file.";
-            exit 1
-        fi
-        python3 resolve_ss_config.py $2 server > /dev/null 2>&1;
-        if [ $? != 0 ]; then
-            echo "Invalid SS config file.";
-            exit 1
-        fi
+
+        SERVER=$(resolve_json $2 server)
+        LOCAL_PORT=$(resolve_json $2 local_port)
+        IP_LIST_PATH="utils/ip_lists"
 
         rules_purge;
-
-        SCRIPT="scripts/resolve_ss_config.py"
-        SERVER=$(python3 $SCRIPT $2 server)
-        LOCAL_PORT=$(python3 $SCRIPT $2 local_port)
-        IP_LIST_PATH="utils/ip_lists"
 
         ipset create $IPSET_NAME hash:net;
 

@@ -2,8 +2,11 @@
 
 import os
 
+if os.geteuid() == 0:
+  exit("Please use non-root user to execute.")
+
 script_path = os.path.dirname(os.path.realpath(__file__))
-os.chdir(os.path.join(script_path, '..'))
+project_root = os.path.realpath(os.path.join(script_path, '..'))
 
 def subnet_mask(prefix_size):
   binary_str_1 = "1" * prefix_size
@@ -25,7 +28,7 @@ def subnet_mask(prefix_size):
 def format_ip_list(name):
   ip_arr = []
 
-  f = open(f'utils/ip_lists/{name}.txt')
+  f = open(f'{project_root}/utils/ip_lists/{name}.txt')
   while True:
     line = f.readline()
     if len(line) == 0:
@@ -46,14 +49,12 @@ ip_list_content = ip_list_content.replace("],", "],\n   ")
 ip_list_content = ip_list_content.replace("]]", "]\n]")
 
 def generate_file(name):
-  f = open(f'utils/pac/{name}_template.js')
-  template = f.read()
-  f.close()
+  filepath = f'{project_root}/utils/pac/{name}_template.js'
+  template = open(filepath).read()
+  template = template.replace("__IP_LIST__", ip_list_content)
 
-  filepath = f'releases/{name}.js'
-  f = open(filepath, 'w')
-  f.write(template.replace("__IP_LIST__", ip_list_content))
-  f.close()
+  filepath = f'{project_root}/releases/{name}.js'
+  open(filepath, 'w').write(template)
 
   print(f'\'{filepath}\' saved.')
 
