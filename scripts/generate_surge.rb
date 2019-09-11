@@ -27,7 +27,7 @@ files.each do |file|
   proxies += proxy
 end
 proxies.rstrip!
-proxy_group.slice!(1, proxy_group.size)
+proxy_group = proxy_group.slice(1, proxy_group.size)
 
 ip_list = File.read("#{PROJECT_ROOT}/utils/ip_lists/lan_ip_list.txt")
 ip_list += File.read("#{PROJECT_ROOT}/utils/ip_lists/china_ip_list.txt")
