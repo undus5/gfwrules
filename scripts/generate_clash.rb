@@ -3,6 +3,7 @@
 require 'etc'
 require 'json'
 require 'yaml'
+require 'securerandom'
 
 if Etc.getpwuid.uid == 0
   puts "Please use non-root user to execute."
@@ -57,6 +58,13 @@ ip_list.each_line do |line|
 end
 clash["Rule"].push("MATCH,ProxyGroup")
 
-filepath = "#{PROJECT_ROOT}/releases/clash.yml"
+if files == ["#{PROJECT_ROOT}/utils/ss_example.json"]
+  filepath = "#{PROJECT_ROOT}/releases/clash.yml"
+elsif !ENV['GFW_PATH'].nil?
+  filepath = "#{PROJECT_ROOT}/releases/#{ENV['GFW_PATH']}/clash.yml"
+else
+  puts SecureRandom.urlsafe_base64(nil, false)
+  exit 1
+end
 File.write(filepath, clash.to_yaml.gsub("---\n", ""))
 puts "#{filepath} saved."

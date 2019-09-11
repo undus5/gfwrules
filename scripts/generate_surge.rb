@@ -2,6 +2,7 @@
 
 require 'etc'
 require 'json'
+require 'securerandom'
 
 if Etc.getpwuid.uid == 0
   puts "Please use non-root user to execute."
@@ -41,6 +42,13 @@ template = template.gsub!('__PROXIES__', proxies)
 template = template.gsub!('__PROXY_GROUP__', proxy_group)
 template = template.gsub!('__RULES__', rules)
 
-filepath = "#{PROJECT_ROOT}/releases/surge.conf"
+if files == ["#{PROJECT_ROOT}/utils/ss_example.json"]
+  filepath = "#{PROJECT_ROOT}/releases/surge.conf"
+elsif !ENV['GFW_PATH'].nil?
+  filepath = "#{PROJECT_ROOT}/releases/#{ENV['GFW_PATH']}/surge.conf"
+else
+  puts SecureRandom.urlsafe_base64(nil, false)
+  exit 1
+end
 File.write(filepath, template)
 puts "#{filepath} saved."
