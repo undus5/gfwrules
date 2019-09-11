@@ -20,7 +20,7 @@ proxies = ""
 proxy_group = ""
 files.each do |file|
   ss = JSON.parse(File.read(file))
-  proxy = "#{ss['server']}:#{ss['server_port']}"
+  proxy = "SS#{ss['server'].delete('.')}#{ss['server_port']}"
   proxy_group += proxy
   proxy += "=#{ss['server']},#{ss['server_port']},#{ss['method']},#{ss['password']}"
   proxy += ",https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/utils/surge/SSEncrypt.module\n"

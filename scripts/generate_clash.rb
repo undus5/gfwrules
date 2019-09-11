@@ -41,7 +41,7 @@ files.each do |file|
   ss = JSON.parse(File.read(file))
   proxy = {
     "type" => "ss",
-    "name" => "#{ss['server']}:#{ss['server_port']}",
+    "name" => "SS#{ss['server'].delete('.')}#{ss['server_port']}",
     "server" => ss["server"],
     "port" => ss["server_port"],
     "password" => ss["password"],
