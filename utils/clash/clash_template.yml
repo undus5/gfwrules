@@ -13,11 +13,12 @@ Proxy:
   password: __PASSWORD__
   cipher: __ENCRYPTION__
   name: SS
+__PROXIES__
 Proxy Group:
 - name: Proxy
   type: select
   proxies:
-  - SS
+__PROXY_GROUP__
 Rule:
 __IP_RULES__
 - MATCH,Proxy

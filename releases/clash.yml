@@ -4,20 +4,20 @@ redir-port: 0
 allow-lan: false
 mode: Rule
 log-level: info
-external-controller: 0.0.0.0:9090
+external-controller: 127.0.0.1:9090
 secret: ''
 Proxy:
 - type: ss
-  server: __SERVER__
-  port: __SERVER_PORT__
-  password: __PASSWORD__
-  cipher: __ENCRYPTION__
-  name: SS
+  name: 0.0.0.0:8388
+  server: 0.0.0.0
+  port: 8388
+  password: mypassword
+  cipher: chacha20-ietf-poly1305
 Proxy Group:
-- name: Proxy
+- name: ProxyGroup
   type: select
   proxies:
-  - SS
+  - 0.0.0.0:8388
 Rule:
 - IP-CIDR,127.0.0.0/8,DIRECT
 - IP-CIDR,192.168.0.0/16,DIRECT
@@ -5719,4 +5719,4 @@ Rule:
 - IP-CIDR,223.255.0.0/17,DIRECT
 - IP-CIDR,223.255.236.0/22,DIRECT
 - IP-CIDR,223.255.252.0/23,DIRECT
-- MATCH,SS
+- MATCH,ProxyGroup

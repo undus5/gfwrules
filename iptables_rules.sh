@@ -36,7 +36,8 @@ rules_purge () {
 }
 
 resolve_json () {
-    python3 -c "import json;print(json.loads(open('$1').read())['$2'])"
+    # python3 -c "import json;print(json.loads(open('$1').read())['$2'])"
+    ruby -e "require 'json'; puts JSON.parse(File.read('$1'))['$2']"
 }
 
 case $1 in
