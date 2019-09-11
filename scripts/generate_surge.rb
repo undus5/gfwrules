@@ -21,12 +21,13 @@ proxy_group = ""
 files.each do |file|
   ss = JSON.parse(File.read(file))
   proxy = "SS#{ss['server'].delete('.')}#{ss['server_port']}"
-  proxy_group += proxy
+  proxy_group += ",#{proxy}"
   proxy += "=#{ss['server']},#{ss['server_port']},#{ss['method']},#{ss['password']}"
   proxy += ",https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/utils/surge/SSEncrypt.module\n"
   proxies += proxy
 end
 proxies.rstrip!
+proxy_group.slice!(1, proxy_group.size)
 
 ip_list = File.read("#{PROJECT_ROOT}/utils/ip_lists/lan_ip_list.txt")
 ip_list += File.read("#{PROJECT_ROOT}/utils/ip_lists/china_ip_list.txt")
