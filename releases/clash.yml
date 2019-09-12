@@ -8,7 +8,7 @@ external-controller: 127.0.0.1:9090
 secret: ''
 Proxy:
 - type: ss
-  name: SS00008388
+  name: 0.0.0.0:8388
   server: 0.0.0.0
   port: 8388
   password: mypassword
@@ -17,7 +17,7 @@ Proxy Group:
 - name: ProxyGroup
   type: select
   proxies:
-  - SS00008388
+  - 0.0.0.0:8388
 Rule:
 - IP-CIDR,127.0.0.0/8,DIRECT
 - IP-CIDR,192.168.0.0/16,DIRECT

@@ -32,25 +32,6 @@ clash = {
 
 PROJECT_ROOT = File.realpath(File.join(__dir__, '..'))
 
-if ARGV.size > 0
-  files = ARGV
-else
-  files = ["#{PROJECT_ROOT}/utils/ss_example.json"]
-end
-files.each do |file|
-  ss = JSON.parse(File.read(file))
-  proxy = {
-    "type" => "ss",
-    "name" => "#{ss['server']}:#{ss['server_port']}",
-    "server" => ss["server"],
-    "port" => ss["server_port"],
-    "password" => ss["password"],
-    "cipher" => ss["method"],
-  }
-  clash["Proxy"].push(proxy)
-  clash["Proxy Group"][0]["proxies"].push(proxy["name"])
-end
-
 ip_list = File.read("#{PROJECT_ROOT}/utils/ip_lists/lan_ip_list.txt")
 ip_list += File.read("#{PROJECT_ROOT}/utils/ip_lists/china_ip_list.txt")
 ip_list.each_line do |line|
@@ -58,13 +39,42 @@ ip_list.each_line do |line|
 end
 clash["Rule"].push("MATCH,ProxyGroup")
 
-if files == ["#{PROJECT_ROOT}/utils/ss_example.json"]
-  filepath = "#{PROJECT_ROOT}/releases/clash.yml"
-elsif !ENV['GFW_PATH'].nil?
-  filepath = "#{PROJECT_ROOT}/releases/#{ENV['GFW_PATH']}/clash.yml"
-else
-  puts SecureRandom.urlsafe_base64(nil, false)
-  exit 1
+def proxies_and_group(files)
+  proxies = []
+  proxy_group = []
+  files.each do |file|
+    ss = JSON.parse(File.read(file))
+    proxy = {
+      "type" => "ss",
+      "name" => "#{ss['server']}:#{ss['server_port']}",
+      "server" => ss["server"],
+      "port" => ss["server_port"],
+      "password" => ss["password"],
+      "cipher" => ss["method"],
+    }
+    proxies.push(proxy)
+    proxy_group.push(proxy["name"])
+  end
+  return proxies, proxy_group
 end
+
+files = ["#{PROJECT_ROOT}/utils/ss_example.json"]
+proxies, proxy_group = proxies_and_group(files)
+clash["Proxy"] = proxies
+clash["Proxy Group"][0]["proxies"] = proxy_group
+filepath = "#{PROJECT_ROOT}/releases/clash.yml"
 File.write(filepath, clash.to_yaml.gsub("---\n", ""))
 puts "#{filepath} saved."
+
+if !ARGV.empty?
+  if !ENV['GFW_PATH'].nil?
+    proxies, proxy_group = proxies_and_group(ARGV)
+    clash["Proxy"] = proxies
+    clash["Proxy Group"][0]["proxies"] = proxy_group
+    filepath = "#{PROJECT_ROOT}/releases/#{ENV['GFW_PATH']}/clash.yml"
+    File.write(filepath, clash.to_yaml.gsub("---\n", ""))
+    puts "#{filepath} saved."
+  else
+    puts SecureRandom.urlsafe_base64(nil, false)
+  end
+end
