@@ -46,7 +46,8 @@ def proxies_and_group(files)
     ss = JSON.parse(File.read(file))
     proxy = {
       "type" => "ss",
-      "name" => "#{ss['server']}:#{ss['server_port']}",
+      # "name" => "#{ss['server']}:#{ss['server_port']}",
+      "name" => File.basename(file, '.*'),
       "server" => ss["server"],
       "port" => ss["server_port"],
       "password" => ss["password"],

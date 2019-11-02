@@ -27,7 +27,8 @@ def replaced_template(template, rules, files)
   proxy_group = ""
   files.each do |file|
     ss = JSON.parse(File.read(file))
-    proxy = "#{ss['server']}:#{ss['server_port']}"
+    # proxy = "#{ss['server']}:#{ss['server_port']}"
+    proxy = File.basename(file, '.*')
     proxy_group += ",#{proxy}"
     proxy += "=custom,#{ss['server']},#{ss['server_port']},#{ss['method']},#{ss['password']}"
     proxy += ",https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/utils/surge/SSEncrypt.module\n"
