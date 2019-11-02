@@ -36,13 +36,15 @@ def replaced_template(template, rules, files)
   proxies.rstrip!
   proxy_group = proxy_group.slice(1, proxy_group.size)
 
-  template.gsub!('__PROXIES__', proxies)
-  template.gsub!('__PROXY_GROUP__', proxy_group)
-  template.gsub!('__RULES__', rules)
+  content = template.gsub('__PROXIES__', proxies)
+  content.gsub!('__PROXY_GROUP__', proxy_group)
+  content.gsub!('__RULES__', rules)
+  content
 end
 
 files = ["#{PROJECT_ROOT}/utils/ss_example.json"]
 filepath = "#{PROJECT_ROOT}/releases/surge.conf"
+# p replaced_template(template, rules, files)
 File.write(filepath, replaced_template(template, rules, files))
 puts "#{filepath} saved."
 
