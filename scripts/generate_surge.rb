@@ -45,7 +45,6 @@ end
 
 files = ["#{PROJECT_ROOT}/utils/ss_example.json"]
 filepath = "#{PROJECT_ROOT}/releases/surge.conf"
-# p replaced_template(template, rules, files)
 File.write(filepath, replaced_template(template, rules, files))
 puts "#{filepath} saved."
 
