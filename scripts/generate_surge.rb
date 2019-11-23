@@ -1,7 +1,7 @@
-#!/usr/bin/ruby
+# surge
 
 require 'etc'
-require 'json'
+require 'yaml'
 require 'securerandom'
 
 if Etc.getpwuid.uid == 0
@@ -10,50 +10,38 @@ if Etc.getpwuid.uid == 0
 end
 
 PROJECT_ROOT = File.realpath(File.join(__dir__, '..'))
+ASSETS_PATH = File.join(PROJECT_ROOT, 'assets')
+RELEASE_PATH = File.join(PROJECT_ROOT, 'dist')
 
-ip_list = File.read("#{PROJECT_ROOT}/utils/ip_lists/lan_ip_list.txt")
-ip_list += File.read("#{PROJECT_ROOT}/utils/ip_lists/china_ip_list.txt")
+ip_list = File.read("#{ASSETS_PATH}/lan_ip_list.txt")
+ip_list += File.read("#{ASSETS_PATH}/china_ip_list.txt")
 rules = ""
 ip_list.each_line do |line|
   rules += "IP-CIDR,#{line.strip},DIRECT\n"
 end
 rules.rstrip!
 
-filepath = "#{PROJECT_ROOT}/utils/surge/surge_template.conf"
+filepath = "#{ASSETS_PATH}/surge_template.conf"
 template = File.read(filepath)
 
-def replaced_template(template, rules, files)
-  proxies = ""
-  proxy_group = ""
-  files.each do |file|
-    ss = JSON.parse(File.read(file))
-    # proxy = "#{ss['server']}:#{ss['server_port']}"
-    proxy = File.basename(file, '.*')
-    proxy_group += ",#{proxy}"
-    proxy += "=custom,#{ss['server']},#{ss['server_port']},#{ss['method']},#{ss['password']}"
-    proxy += ",https://raw.githubusercontent.com/dodowhat/china-ip-rules/master/utils/surge/SSEncrypt.module\n"
-    proxies += proxy
-  end
-  proxies.rstrip!
-  proxy_group = proxy_group.slice(1, proxy_group.size)
-
-  content = template.gsub('__PROXIES__', proxies)
-  content.gsub!('__PROXY_GROUP__', proxy_group)
-  content.gsub!('__RULES__', rules)
-  content
+filepath = "#{PROJECT_ROOT}/servers.yml"
+proxies = ""
+proxy_group = ""
+servers = YAML.load(File.read(filepath))
+servers.each do |server|
+  proxy = server["alias"]
+  proxy_group += ", #{proxy}"
+  proxy += " = https, #{server['server']}, #{server['port']}"
+  proxy += ", #{server['username']}, #{server['password']}\n"
+  proxies += proxy
 end
+proxies.rstrip!
+proxy_group = proxy_group.slice(1, proxy_group.size)
 
-files = ["#{PROJECT_ROOT}/utils/ss_example.json"]
-filepath = "#{PROJECT_ROOT}/releases/surge.conf"
-File.write(filepath, replaced_template(template, rules, files))
+content = template.gsub('__PROXIES__', proxies)
+content.gsub!('__PROXY_GROUP__', proxy_group)
+content.gsub!('__RULES__', rules)
+
+filepath = "#{RELEASE_PATH}/surge.conf"
+File.write(filepath, content)
 puts "#{filepath} saved."
-
-if !ARGV.empty?
-  if !ENV['GFW_PATH'].nil?
-    filepath = "#{PROJECT_ROOT}/releases/#{ENV['GFW_PATH']}/surge.conf"
-    File.write(filepath, replaced_template(template, rules, ARGV))
-    puts "#{filepath} saved."
-  else
-    puts SecureRandom.urlsafe_base64(nil, false)
-  end
-end

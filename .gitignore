@@ -1,5 +1,3 @@
-releases/*
-!releases/clash.yml
-!releases/pac4sswin.js
-!releases/pac4switchyomega.js
-!releases/surge.conf
+servers.yml
+dist/*
+!dist/.keep
