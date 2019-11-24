@@ -12,6 +12,9 @@ end
 PROJECT_ROOT = File.realpath(File.join(__dir__, '..'))
 ASSETS_PATH = File.join(PROJECT_ROOT, 'assets')
 RELEASE_PATH = File.join(PROJECT_ROOT, 'dist')
+if !Dir.exist?(RELEASE_PATH)
+  Dir.mkdir(RELEASE_PATH)
+end
 
 clash = {
   "port" => 7890,
@@ -41,6 +44,9 @@ end
 clash["Rule"].push("MATCH,ProxyGroup")
 
 filepath = "#{PROJECT_ROOT}/servers.yml"
+if !File.exist?(filepath)
+  File.write(filepath, File.read("#{ASSETS_PATH}/server_template.yml"))
+end
 proxies = []
 proxy_group = []
 servers = YAML.load(File.read(filepath))

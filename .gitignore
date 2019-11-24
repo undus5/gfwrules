@@ -1,3 +1,2 @@
 servers.yml
-dist/*
-!dist/.keep
+dist

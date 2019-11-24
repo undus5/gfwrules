@@ -1,0 +1,5 @@
+- alias: "example"
+  server: "example.com"
+  port: 443
+  username: "myusername"
+  password: "mypassword"
