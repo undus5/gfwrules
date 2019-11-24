@@ -1,6 +1,6 @@
 # china-ip-rules
 
-Turn China IP list([17mon@github/china_ip_list](https://github.com/17mon/china_ip_list)) into Shadowsocks clients rules, make all china IP and LAN IP request go directly.
+Turn China IP list([17mon@github/china_ip_list](https://github.com/17mon/china_ip_list)) into Proxy clients (Surge, Clash, SwitchyOmega...) rules, make all china IP and LAN IP request go directly.
 
 DNS over TCP:
 
