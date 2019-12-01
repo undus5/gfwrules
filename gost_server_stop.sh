@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker container stop gost;
-docker container prune;
+docker container stop gost
+docker container prune
