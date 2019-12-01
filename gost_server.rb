@@ -9,6 +9,7 @@ if Etc.getpwuid.uid == 0
 end
 
 PROJECT_ROOT = File.realpath(File.join(__dir__))
+ASSETS_PATH = File.join(PROJECT_ROOT, 'assets')
 RELEASE_PATH = File.join(PROJECT_ROOT, 'dist')
 if !Dir.exist?(RELEASE_PATH)
   Dir.mkdir(RELEASE_PATH)
@@ -35,9 +36,9 @@ servers.each do |server|
   gost_server_start += "docker run -d --name gost"
   gost_server_start += " -v ${CERT_DIR}:${CERT_DIR}:ro"
   gost_server_start += " --net=host ginuerzh/gost"
-  gost_server_start += " -L http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}"
+  gost_server_start += " -L \"http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}\""
   if server['middleware']
-    gost_server_start += " -F http://127.0.0.1:7890"
+    gost_server_start += " -F \"http://127.0.0.1:7890\""
   end
 
   filepath = "#{RELEASE_PATH}/gost_server_#{server['alias']}_start.sh"

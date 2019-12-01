@@ -59,8 +59,8 @@ servers.each_with_index do |server, index|
 
   if !server['middleware']
     gost_local_start += "docker run -d -p #{local_port}:#{local_port} --name #{container_name} ginuerzh/gost"
-    gost_local_start += " -L http://:#{local_port}"
-    gost_local_start += " -F https://#{server['username']}:#{server['password']}@#{server['server']}:#{server['port']}\n\n"
+    gost_local_start += " -L \"http://:#{local_port}\""
+    gost_local_start += " -F \"https://#{server['username']}:#{server['password']}@#{server['server']}:#{server['port']}\"\n\n"
 
     gost_local_stop += "docker container stop #{container_name}\n\n"
   end
