@@ -1,0 +1,13 @@
+- name: "Server1"
+  type: "http"
+  server: "example.com"
+  port: 443
+  username: "myusername"
+  password: "mypassword"
+
+- name: "Server2"
+  type: "socks5"
+  server: "example.com"
+  port: 1080
+  username: "myusername"
+  password: "mypassword"

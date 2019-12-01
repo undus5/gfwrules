@@ -8,14 +8,47 @@ if Etc.getpwuid.uid == 0
   exit 1
 end
 
-PROJECT_ROOT = File.realpath(File.join(__dir__))
-ASSETS_PATH = File.join(PROJECT_ROOT, 'assets')
-RELEASE_PATH = File.join(PROJECT_ROOT, 'dist')
-if !Dir.exist?(RELEASE_PATH)
-  Dir.mkdir(RELEASE_PATH)
+def build(target_directory, servers, template)
+  clash = YAML.load(template)
+  proxies = []
+  proxy_group = []
+
+  servers.each_with_index do |server, index|
+    if server["type"] == "https"
+      proxy = {
+        "name" => server["name"] + "_local",
+        "type" => "http",
+        "server" => "127.0.0.1",
+        "port" => 8444 + index,
+      }
+    else
+      proxy = server
+    end
+    proxies.push(proxy)
+    proxy_group.push(proxy["name"])
+  end
+
+  clash["Proxy"] = proxies
+  clash["Proxy Group"].each_index do |index|
+    clash["Proxy Group"][index]["proxies"] += proxy_group
+  end
+  target_filepath = File.join(target_directory, "config.yaml")
+  File.write(target_filepath, clash.to_yaml.gsub("---\n", ""))
+  puts "#{target_filepath} saved."
 end
 
-clash = {
+PROJECT_ROOT = File.realpath(File.join(__dir__))
+ASSETS_DIR = File.join(PROJECT_ROOT, 'assets')
+DIST_DIR = File.join(PROJECT_ROOT, 'dist')
+TEST_DIR = File.join(PROJECT_ROOT, 'test')
+Dir.mkdir(TEST_DIR) if !Dir.exist?(TEST_DIR)
+SERVER_EXAMPLE = File.join(ASSETS_DIR, "server_example.yml")
+SERVER_TEST = File.join(TEST_DIR, "servers.yml")
+if !File.exist?(SERVER_TEST)
+  File.write(SERVER_TEST, File.read(SERVER_EXAMPLE))
+end
+
+config = {
   "port" => 7890,
   "socks-port" => 7891,
   "redir-port" => 0,
@@ -27,73 +60,34 @@ clash = {
   "Proxy" => [],
   "Proxy Group" => [
     {
-      "name" => "ProxyGroup",
+      "name" => "ManualGroup",
       "type" => "select",
-      "proxies" => [] 
+      "proxies" => ["AutoGroup"] 
+    },
+    {
+      "name" => "AutoGroup",
+      "type" => "fallback",
+      "proxies" => [],
+      "url" => "http://www.google.com/generate_204",
+      "interval" => 300
     }
   ],
   "Rule" => []
 }
 
-ip_list = File.read("#{ASSETS_PATH}/lan_ip_list.txt")
-ip_list += File.read("#{ASSETS_PATH}/china_ip_list.txt")
+ip_list = File.read("#{ASSETS_DIR}/lan_ip_list.txt")
+ip_list += File.read("#{ASSETS_DIR}/china_ip_list.txt")
 ip_list.each_line do |line|
-  clash["Rule"].push("IP-CIDR,#{line.strip},DIRECT")
+  config["Rule"].push("IP-CIDR,#{line.strip},DIRECT")
 end
-clash["Rule"].push("MATCH,ProxyGroup")
+config["Rule"].push("MATCH,ManualGroup")
 
-filepath = "#{PROJECT_ROOT}/servers.yml"
-if !File.exist?(filepath)
-  File.write(filepath, File.read("#{ASSETS_PATH}/server_template.yml"))
-end
-servers = YAML.load(File.read(filepath))
+template = config.to_yaml
 
-proxies = []
-proxy_group = []
-gost_local_start = "#!/bin/bash\n\n"
-gost_local_stop = "#!/bin/bash\n\n"
+# Build dist
+servers = YAML.load(File.read(SERVER_EXAMPLE))
+build(DIST_DIR, servers, template)
 
-servers.each_with_index do |server, index|
-  container_name = "gost_local_#{server['alias']}"
-  local_port = 8444 + index
-
-  if !server['middleware']
-    gost_local_start += "docker run -d -p #{local_port}:#{local_port} --name #{container_name} ginuerzh/gost"
-    gost_local_start += " -L \"http://:#{local_port}\""
-    gost_local_start += " -F \"https://#{server['username']}:#{server['password']}@#{server['server']}:#{server['port']}\"\n\n"
-
-    gost_local_stop += "docker container stop #{container_name}\n\n"
-  end
-
-  proxy = {
-    "type" => "http",
-    "name" => container_name,
-    "server" => "127.0.0.1",
-    "port" => local_port,
-  }
-  proxies.push(proxy)
-  proxy_group.push(proxy["name"])
-end
-
-filepath = "#{RELEASE_PATH}/gost_local_start.sh"
-File.write(filepath, gost_local_start)
-puts "#{filepath} saved."
-
-filepath = "#{RELEASE_PATH}/gost_local_stop.sh"
-gost_local_stop += "docker container prune\n"
-File.write(filepath, gost_local_stop)
-puts "#{filepath} saved."
-
-clash["Proxy"] = proxies
-clash["Proxy Group"][0]["proxies"] = proxy_group
-filepath = "#{RELEASE_PATH}/clash.yml"
-File.write(filepath, clash.to_yaml.gsub("---\n", ""))
-puts "#{filepath} saved."
-
-clash_start = "#!/bin/bash\n\n"
-clash_start += "docker run -d -p 7890:7890 --name clash"
-clash_start += " -v #{filepath}:/root/.config/clash/config.yaml"
-clash_start += " dreamacro/clash\n"
-filepath = "#{RELEASE_PATH}/clash_start.sh"
-File.write(filepath, clash_start)
-puts "#{filepath} saved."
+# Build test
+servers = YAML.load(File.read(SERVER_TEST))
+build(TEST_DIR, servers, template)

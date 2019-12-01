@@ -8,45 +8,55 @@ if Etc.getpwuid.uid == 0
   exit 1
 end
 
-PROJECT_ROOT = File.realpath(File.join(__dir__))
-ASSETS_PATH = File.join(PROJECT_ROOT, 'assets')
-RELEASE_PATH = File.join(PROJECT_ROOT, 'dist')
-if !Dir.exist?(RELEASE_PATH)
-  Dir.mkdir(RELEASE_PATH)
+# test
+def build(target_directory, servers, template)
+  proxies = ""
+  proxy_group = ""
+  # servers = YAML.load(File.read(server_config_filepath))
+  servers.each do |server|
+    proxy = server["name"]
+    proxy_group += ", #{proxy}"
+    proxy += " = #{server['type']}, #{server['server']}, #{server['port']}"
+    proxy += ", #{server['username']}, #{server['password']}\n"
+    proxies += proxy
+  end
+  proxies.rstrip!
+  proxy_group = proxy_group.slice(1, proxy_group.size)
+
+  content = template.gsub('__PROXIES__', proxies)
+  content.gsub!('__PROXY_GROUP__', proxy_group)
+
+  target_filepath = File.join(target_directory, "surge.conf")
+  File.write(target_filepath, content)
+  puts "#{target_filepath} saved."
 end
 
-ip_list = File.read("#{ASSETS_PATH}/lan_ip_list.txt")
-ip_list += File.read("#{ASSETS_PATH}/china_ip_list.txt")
+PROJECT_ROOT = File.realpath(File.join(__dir__))
+ASSETS_DIR = File.join(PROJECT_ROOT, 'assets')
+DIST_DIR = File.join(PROJECT_ROOT, 'dist')
+TEST_DIR = File.join(PROJECT_ROOT, 'test')
+Dir.mkdir(TEST_DIR) if !Dir.exist?(TEST_DIR)
+SERVER_EXAMPLE = File.join(ASSETS_DIR, "server_example.yml")
+SERVER_TEST = File.join(TEST_DIR, "servers.yml")
+if !File.exist?(SERVER_TEST)
+  File.write(SERVER_TEST, File.read(SERVER_EXAMPLE))
+end
+
+ip_list = File.read("#{ASSETS_DIR}/lan_ip_list.txt")
+ip_list += File.read("#{ASSETS_DIR}/china_ip_list.txt")
 rules = ""
 ip_list.each_line do |line|
   rules += "IP-CIDR,#{line.strip},DIRECT\n"
 end
 rules.rstrip!
 
-filepath = "#{ASSETS_PATH}/surge_template.conf"
-template = File.read(filepath)
+template = File.read(File.join(ASSETS_DIR, "surge_template.conf"))
+template.gsub!('__RULES__', rules)
 
-filepath = "#{PROJECT_ROOT}/servers.yml"
-if !File.exist?(filepath)
-  File.write(filepath, File.read("#{ASSETS_PATH}/server_template.yml"))
-end
-proxies = ""
-proxy_group = ""
-servers = YAML.load(File.read(filepath))
-servers.each do |server|
-  proxy = server["alias"]
-  proxy_group += ", #{proxy}"
-  proxy += " = https, #{server['server']}, #{server['port']}"
-  proxy += ", #{server['username']}, #{server['password']}\n"
-  proxies += proxy
-end
-proxies.rstrip!
-proxy_group = proxy_group.slice(1, proxy_group.size)
+# Build dist
+servers = YAML.load(File.read(SERVER_EXAMPLE))
+build(DIST_DIR, servers, template)
 
-content = template.gsub('__PROXIES__', proxies)
-content.gsub!('__PROXY_GROUP__', proxy_group)
-content.gsub!('__RULES__', rules)
-
-filepath = "#{RELEASE_PATH}/surge.conf"
-File.write(filepath, content)
-puts "#{filepath} saved."
+# Build test
+servers = YAML.load(File.read(SERVER_TEST))
+build(TEST_DIR, servers, template)

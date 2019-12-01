@@ -8,8 +8,8 @@ if Etc.getpwuid.uid == 0
 end
 
 PROJECT_ROOT = File.realpath(File.join(__dir__))
-ASSETS_PATH = File.join(PROJECT_ROOT, 'assets')
-RELEASE_PATH = File.join(PROJECT_ROOT, 'dist')
+ASSETS_DIR = File.join(PROJECT_ROOT, 'assets')
+DIST_DIR = File.join(PROJECT_ROOT, 'dist')
 
 def subnet_mask(subnet_prefix_size)
   binary_str_1 = "1" * subnet_prefix_size
@@ -25,8 +25,8 @@ def subnet_mask(subnet_prefix_size)
   mask_str
 end
 
-ip_list = File.read("#{ASSETS_PATH}/lan_ip_list.txt")
-ip_list += File.read("#{ASSETS_PATH}/china_ip_list.txt")
+ip_list = File.read("#{ASSETS_DIR}/lan_ip_list.txt")
+ip_list += File.read("#{ASSETS_DIR}/china_ip_list.txt")
 
 ip_list_arr = []
 ip_list.each_line do |line|
@@ -41,10 +41,10 @@ ip_list_content.gsub!("],", "],\n   ")
 ip_list_content.gsub!("]]", "]\n]")
 
 def generate_file(name, ip_list_content)
-  filepath = "#{ASSETS_PATH}/#{name}_template.js"
+  filepath = "#{ASSETS_DIR}/#{name}_template.js"
   template = File.read(filepath)
   template.gsub!('__IP_LIST__', ip_list_content)
-  filepath = "#{RELEASE_PATH}/#{name}.js"
+  filepath = "#{DIST_DIR}/#{name}.js"
   File.write(filepath, template)
   puts "#{filepath} saved."
 end
