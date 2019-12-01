@@ -58,11 +58,11 @@ servers.each_with_index do |server, index|
   local_port = 8444 + index
 
   if !server['middleware']
-    gost_local_start += "docker run -d -p #{local_port}:#{local_port} --name #{container_name} ginuerzh/gost \\\n"
-    gost_local_start += "    -L http://:#{local_port} \\\n"
-    gost_local_start += "    -F https://#{server['username']}:#{server['password']}@#{server['server']}:#{server['port']}\n\n"
+    gost_local_start += "docker run -d -p #{local_port}:#{local_port} --name #{container_name} ginuerzh/gost"
+    gost_local_start += " -L http://:#{local_port}"
+    gost_local_start += " -F https://#{server['username']}:#{server['password']}@#{server['server']}:#{server['port']}\n\n"
 
-    gost_local_stop += "docker container stop #{container_name};\n\n"
+    gost_local_stop += "docker container stop #{container_name}\n\n"
   end
 
   proxy = {
@@ -91,10 +91,9 @@ File.write(filepath, clash.to_yaml.gsub("---\n", ""))
 puts "#{filepath} saved."
 
 clash_start = "#!/bin/bash\n\n"
-clash_start = "CONFIG=#{filepath}\n"
-clash_start += "docker run -d -p 7890:7890 --name clash \\\n"
-clash_start += "    -v ${CONFIG}:/root/.config/clash/config.yaml \\\n"
-clash_start += "    --net=host dreamacro/clash\n"
+clash_start += "docker run -d -p 7890:7890 --name clash"
+clash_start += " -v #{filepath}:/root/.config/clash/config.yaml"
+clash_start += " dreamacro/clash\n"
 filepath = "#{RELEASE_PATH}/clash_start.sh"
 File.write(filepath, clash_start)
 puts "#{filepath} saved."

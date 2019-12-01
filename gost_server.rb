@@ -32,12 +32,12 @@ servers.each do |server|
   gost_server_start += "CERT=${CERT_DIR}/live/${DOMAIN}/fullchain.pem\n"
   gost_server_start += "KEY=${CERT_DIR}/live/${DOMAIN}/privkey.pem\n\n"
 
-  gost_server_start += "docker run -d --name gost \\\n"
-  gost_server_start += "    -v ${CERT_DIR}:${CERT_DIR}:ro \\\n"
-  gost_server_start += "    --net=host ginuerzh/gost \\\n"
-  gost_server_start += "    -L http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}"
+  gost_server_start += "docker run -d --name gost"
+  gost_server_start += " -v ${CERT_DIR}:${CERT_DIR}:ro"
+  gost_server_start += " --net=host ginuerzh/gost"
+  gost_server_start += " -L http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}"
   if server['middleware']
-    gost_server_start += " \\\n    -F http://127.0.0.1:7890\n"
+    gost_server_start += " -F http://127.0.0.1:7890"
   end
 
   filepath = "#{RELEASE_PATH}/gost_server_#{server['alias']}_start.sh"
