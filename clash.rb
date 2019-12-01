@@ -57,11 +57,13 @@ servers.each_with_index do |server, index|
   container_name = "gost_local_#{server['alias']}"
   local_port = 8444 + index
 
-  gost_local_start += "docker run -d -p #{local_port}:#{local_port} --name #{container_name} ginuerzh/gost \\\n"
-  gost_local_start += "    -L http://:#{local_port} \\\n"
-  gost_local_start += "    -F https://#{server['username']}:#{server['password']}@#{server['server']}:#{server['port']}\n\n"
+  if !server['middleware']
+    gost_local_start += "docker run -d -p #{local_port}:#{local_port} --name #{container_name} ginuerzh/gost \\\n"
+    gost_local_start += "    -L http://:#{local_port} \\\n"
+    gost_local_start += "    -F https://#{server['username']}:#{server['password']}@#{server['server']}:#{server['port']}\n\n"
 
-  gost_local_stop += "docker container stop #{container_name};\n\n"
+    gost_local_stop += "docker container stop #{container_name};\n\n"
+  end
 
   proxy = {
     "type" => "http",
