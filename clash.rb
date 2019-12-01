@@ -91,7 +91,7 @@ File.write(filepath, clash.to_yaml.gsub("---\n", ""))
 puts "#{filepath} saved."
 
 clash_start = "#!/bin/bash\n\n"
-clash_start = "CONFIG=#{filepath}"
+clash_start = "CONFIG=#{filepath}\n"
 clash_start += "docker run -d -p 7890:7890 --name clash \\\n"
 clash_start += "    -v ${CONFIG}:/root/.config/clash/config.yaml \\\n"
 clash_start += "    --net=host dreamacro/clash\n"
