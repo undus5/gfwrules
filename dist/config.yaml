@@ -16,7 +16,7 @@ Proxy:
 - name: Server2
   type: socks5
   server: example.com
-  port: 443
+  port: 1080
   username: myusername
   password: mypassword
 Proxy Group:
