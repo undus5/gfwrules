@@ -40,7 +40,7 @@ servers.each_with_index do |server, index|
     gost_local_start += " -L \"http://:#{local_port}\""
     gost_local_start += " -F \"https://${USER}:${PASS}@${DOMAIN}:${PORT}\"\n\n"
 
-    gost_local_stop += "docker container stop #{container_name}\n"
+    gost_local_stop += "docker container rm -f #{container_name}\n"
   end
 end
 
@@ -50,7 +50,6 @@ if writable
   puts "#{filepath} saved."
 
   filepath = "#{TEST_DIR}/gost_local_stop.sh"
-  gost_local_stop += "docker container prune\n"
   File.write(filepath, gost_local_stop)
   puts "#{filepath} saved."
 end

@@ -44,13 +44,12 @@ servers.each do |server|
     filepath = "#{TEST_DIR}/gost_server_#{server['name']}_start.sh"
     File.write(filepath, gost_server_start)
     puts "#{filepath} saved."
-
-    gost_server_stop = "#!/bin/bash\n\n"
-    gost_server_stop += "docker container stop gost\n"
-    gost_server_stop += "docker container prune\n"
-
-    filepath = "#{TEST_DIR}/gost_server_stop.sh"
-    File.write(filepath, gost_server_stop)
-    puts "#{filepath} saved."
   end
 end
+
+gost_server_stop = "#!/bin/bash\n\n"
+gost_server_stop += "docker container rm -f gost\n"
+
+filepath = "#{TEST_DIR}/gost_server_stop.sh"
+File.write(filepath, gost_server_stop)
+puts "#{filepath} saved."
