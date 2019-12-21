@@ -15,17 +15,11 @@ def build(target_directory, servers, template)
 
   servers.each_with_index do |server, index|
     if server["type"] == "https"
-      proxy = {
-        "name" => server["name"] + "_local",
-        "type" => "http",
-        "server" => "127.0.0.1",
-        "port" => 8444 + index,
-      }
-    else
-      proxy = server
+      server["type"] = "http"
+      server["tls"] = true
     end
-    proxies.push(proxy)
-    proxy_group.push(proxy["name"])
+    proxies.push(server)
+    proxy_group.push(server["name"])
   end
 
   clash["Proxy"] = proxies
