@@ -25,7 +25,7 @@ script += "KEY=${CERT_DIR}/live/${DOMAIN}/privkey.pem\n\n"
 
 script += "gost -L \"http2://${USER}:${PASS}@${BIND_IP}:${PORT}?cert=${CERT}&key=${KEY}\""
 
-script += "\n\n# -F \"https://127.0.0.1:8080\""
+script += "\n\n# -F \"https://127.0.0.1:7890\""
 script += "\n# -F \"https://${USER}:${PASS}@0.0.0.0:${PORT}\""
 
 filepath = "#{TEST_DIR}/gost_server_start.sh"
