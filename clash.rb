@@ -14,7 +14,8 @@ def build(target_directory, servers, template)
   proxy_group = []
 
   servers.each_with_index do |server, index|
-    if server["type"] == "https"
+    case server["type"]
+    when "https"
       server["type"] = "http"
       server["tls"] = true
     end

@@ -14,11 +14,14 @@ def build(target_directory, servers, template)
   proxy_group = ""
   # servers = YAML.load(File.read(server_config_filepath))
   servers.each do |server|
-    proxy = server["name"]
-    proxy_group += ", #{proxy}"
-    proxy += " = #{server['type']}, #{server['server']}, #{server['port']}"
-    proxy += ", #{server['username']}, #{server['password']}\n"
-    proxies += proxy
+    case server["type"]
+    when "https"
+      proxy = server["name"]
+      proxy_group += ", #{proxy}"
+      proxy += " = #{server['type']}, #{server['server']}, #{server['port']}"
+      proxy += ", #{server['username']}, #{server['password']}\n"
+      proxies += proxy
+    end
   end
   proxies.rstrip!
   proxy_group = proxy_group.slice(1, proxy_group.size)
