@@ -1,6 +1,0 @@
-- name: "Server1"
-  server: "example.com"
-  username: "myusername"
-  password: "mypassword"
-  type: "https"
-  port: 443
