@@ -7,14 +7,14 @@ log-level: info
 external-controller: 127.0.0.1:9090
 secret: ''
 Proxy:
-- name: server3
+- name: server1
   type: http
   tls: true
   server: server1.example.com
   port: 443
   username: username1
   password: password1
-- name: server4
+- name: server2
   type: http
   tls: true
   server: server2.example.com
@@ -25,8 +25,8 @@ Proxy Group:
 - name: ManualGroup
   type: select
   proxies:
-  - server3
-  - server4
+  - server1
+  - server2
 Rule:
 - IP-CIDR,127.0.0.0/8,DIRECT
 - IP-CIDR,192.168.0.0/16,DIRECT

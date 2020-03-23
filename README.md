@@ -2,9 +2,13 @@
 
 Surge / Clash 配置文件生成工具。
 
-规则由 ipip.net [china_ip_list](https://github.com/17mon/china_ip_list) 转换生成。
+有两个版本:
 
-大陆 IP 走直连，其余走代理。
+1. 大陆 IP 走直连，其余走代理。
+
+   规则由 ipip.net [china_ip_list](https://github.com/17mon/china_ip_list) 转换生成。
+
+2. GFWList
 
 安装:
 
@@ -27,18 +31,22 @@ Surge / Clash 配置文件生成工具。
 
 示例下载(把里面的服务器配置改成自己的就可以使用了，不定期更新):
 
-* [surge.conf](https://raw.githubusercontent.com/dodowhat/gfwrules/master/surge.conf)
+* [surge_bypass.conf](https://raw.githubusercontent.com/dodowhat/gfwrules/master/surge_bypass.conf)
 
-* [clash.yml](https://raw.githubusercontent.com/dodowhat/gfwrules/master/clash.yml)
+* [surge_gfwlist.conf](https://raw.githubusercontent.com/dodowhat/gfwrules/master/surge_gfwlist.conf)
 
+* [clash_bypass.yml](https://raw.githubusercontent.com/dodowhat/gfwrules/master/clash_bypass.yml)
+
+* [clash_gfwlist.yml](https://raw.githubusercontent.com/dodowhat/gfwrules/master/clash_gfwlist.yml)
 
 Manual:
 
     Usage: gfwrules.sh [OPTIONS] [FILE]
 
     Building config files for Surge and Clash with specific rules and servers.
-    The rules is making the connection go directly when meeting China IPs
-    and go through proxy when meeting the others.
+    There are two versions of the configs:
+      1. Bypass China IP
+      2. GFWList
 
     OPTIONS:
       -b [FILE]     build config files with your specific servers
