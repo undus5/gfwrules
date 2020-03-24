@@ -1,6 +1,6 @@
 # GFW Rules
 
-Surge / Clash 配置文件生成工具。
+Surge / Clash 分流规则配置文件生成工具。
 
 有两个版本:
 
@@ -29,7 +29,7 @@ Surge / Clash 配置文件生成工具。
     server1 = https, server1.example.com, 443, username1, password1
     server2 = https, server2.example.com, 443, username2, password2
 
-示例下载(把里面的服务器配置改成自己的就可以使用了，不定期更新):
+示例下载 (把里面的服务器配置改成自己的就可以使用了，不定期更新):
 
 * [surge_bypass.conf](https://raw.githubusercontent.com/dodowhat/gfwrules/master/surge_bypass.conf)
 
